@@ -1,0 +1,11 @@
+services:
+  database:
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: mangoon
+      POSTGRES_PASSWORD: mangoon
+      POSTGRES_DB: mangoon
+    volumes:
+      - ./.local-db_data/:/var/lib/postgresql

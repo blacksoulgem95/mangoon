@@ -270,5 +270,6 @@ protected function isAccessible(User $user, ?string $path = null): bool
 </laravel-boost-guidelines>
 
 <data-structure>
-    Manga are stored in CBZ Format on S3 or local storage, as defined by the user
+    Manga are stored in CBZ Format on S3 or local storage, as defined by the user.
+    the full documentation is on docs/documentation.md
 </data-structure>

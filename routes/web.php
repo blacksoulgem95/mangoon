@@ -5,6 +5,8 @@ use App\Http\Controllers\Admin\MangaController as AdminMangaController;
 use App\Http\Controllers\ChapterController;
 use App\Http\Controllers\MangaController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\ChapterListController;
+use App\Http\Controllers\Admin\UserController;
 
 /*
 |--------------------------------------------------------------------------

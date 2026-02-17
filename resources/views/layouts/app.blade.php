@@ -203,7 +203,7 @@
                         </div>
                         <div class="flex justify-between">
                             <span>VERSION:</span>
-                            <span class="text-pip-green">2.0.77</span>
+                            <span class="text-pip-green">Laravel {{ preg_replace('/[^0-9.]/', '', config('app.version', '^12.0')) }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span>VAULT:</span>

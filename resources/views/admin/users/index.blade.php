@@ -8,11 +8,13 @@
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-future text-3xl font-semibold text-pip-green">Users Management</h1>
 
-        <div class="space-x-2">
-            <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">
+        <div class="space-x-2 flex">
+            <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary flex items-center gap-2">
+                <i class="gg-layout-grid"></i>
                 <span class="terminal-text">Dashboard</span>
             </a>
-            <a href="{{ route('admin.users.index') }}" class="btn btn-primary">
+            <a href="{{ route('admin.users.index') }}" class="btn btn-primary flex items-center gap-2">
+                <i class="gg-sync"></i>
                 <span class="terminal-text">Refresh</span>
             </a>
         </div>
@@ -22,7 +24,8 @@
     <form method="GET" action="{{ route('admin.users.index') }}" class="flex flex-wrap gap-3 mb-6">
         <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name or email…" class="p-2 bg-bg-screen border border-border rounded text-mono w-full sm:w-64">
 
-        <button type="submit" class="btn btn-secondary">
+        <button type="submit" class="btn btn-secondary flex items-center gap-2">
+            <i class="gg-search"></i>
             <span class="terminal-text">Apply</span>
         </button>
     </form>
@@ -65,7 +68,8 @@
                         </td>
                         <td class="p-3">{{ $user->created_at->format('F j, Y') }}</td>
                         <td class="p-3 space-x-2">
-                            <a href="{{ route('admin.users.show', $user) }}" class="btn btn-secondary btn-sm">
+                            <a href="{{ route('admin.users.show', $user) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-2">
+                                <i class="gg-profile"></i>
                                 <span class="terminal-text">View</span>
                             </a>
                         </td>

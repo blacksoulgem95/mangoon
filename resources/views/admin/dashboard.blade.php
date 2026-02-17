@@ -14,10 +14,8 @@
                 <h2 class="text-future font-semibold text-2xl mb-1 glow-text">Total Manga</h2>
                 <p class="text-4xl font-bold text-pip-green">{{ \App\Models\Manga::count() }}</p>
             </div>
-            <div class="text-pip-green">
-                <svg class="h-16 w-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
+            <div class="text-pip-green flex justify-center">
+                <i class="gg-layout-grid" style="--ggs: 3;"></i>
             </div>
         </div>
 
@@ -27,10 +25,8 @@
                 <h2 class="text-future font-semibold text-2xl mb-1 glow-text">Total Chapters</h2>
                 <p class="text-4xl font-bold text-pip-green">{{ \App\Models\Chapter::count() }}</p>
             </div>
-            <div class="text-pip-green">
-                <svg class="h-16 w-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
+            <div class="text-pip-green flex justify-center">
+                <i class="gg-file-document" style="--ggs: 3;"></i>
             </div>
         </div>
 
@@ -40,10 +36,8 @@
                 <h2 class="text-future font-semibold text-2xl mb-1 glow-text">Total Users</h2>
                 <p class="text-4xl font-bold text-pip-green">{{ \App\Models\User::count() }}</p>
             </div>
-            <div class="text-pip-green">
-                <svg class="h-16 w-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 2a7 7 0 017 7v5a5 5 0 00-5 5h-4a5 5 0 00-5-5v-5a7 7 0 017-7z" />
-                </svg>
+            <div class="text-pip-green flex justify-center">
+                <i class="gg-user" style="--ggs: 3;"></i>
             </div>
         </div>
     </div>
@@ -51,30 +45,22 @@
     {{-- Quick Links --}}
     <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <a href="{{ route('admin.manga.index') }}" class="panel p-4 flex flex-col items-center justify-center hover:shadow-xl transition-all">
-            <svg class="h-12 w-12 text-pip-green mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 3h18v18H3z" />
-            </svg>
+            <div class="mb-4 text-pip-green"><i class="gg-layout-grid" style="--ggs: 2;"></i></div>
             <span class="text-future text-xl font-semibold">Manga Management</span>
         </a>
 
         <a href="{{ route('admin.chapters.index') }}" class="panel p-4 flex flex-col items-center justify-center hover:shadow-xl transition-all">
-            <svg class="h-12 w-12 text-pip-green mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 3h18v18H3z" />
-            </svg>
+            <div class="mb-4 text-pip-green"><i class="gg-file-document" style="--ggs: 2;"></i></div>
             <span class="text-future text-xl font-semibold">Chapters Management</span>
         </a>
 
         <a href="{{ route('admin.users.index') }}" class="panel p-4 flex flex-col items-center justify-center hover:shadow-xl transition-all">
-            <svg class="h-12 w-12 text-pip-green mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 3h18v18H3z" />
-            </svg>
+            <div class="mb-4 text-pip-green"><i class="gg-user-list" style="--ggs: 2;"></i></div>
             <span class="text-future text-xl font-semibold">Users Management</span>
         </a>
 
         <a href="{{ route('admin.settings') }}" class="panel p-4 flex flex-col items-center justify-center hover:shadow-xl transition-all">
-            <svg class="h-12 w-12 text-pip-green mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 3h18v18H3z" />
-            </svg>
+            <div class="mb-4 text-pip-green"><i class="gg-options" style="--ggs: 2;"></i></div>
             <span class="text-future text-xl font-semibold">Settings</span>
         </a>
     </div>

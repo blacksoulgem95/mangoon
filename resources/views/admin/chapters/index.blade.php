@@ -8,11 +8,13 @@
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-future text-3xl font-semibold text-pip-green">All Chapters</h1>
 
-        <div class="space-x-2">
-            <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">
+        <div class="space-x-2 flex">
+            <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary flex items-center gap-2">
+                <i class="gg-layout-grid"></i>
                 <span class="terminal-text">Dashboard</span>
             </a>
-            <a href="{{ route('admin.chapters.index') }}" class="btn btn-primary">
+            <a href="{{ route('admin.chapters.index') }}" class="btn btn-primary flex items-center gap-2">
+                <i class="gg-sync"></i>
                 <span class="terminal-text">Refresh</span>
             </a>
         </div>
@@ -28,7 +30,8 @@
             <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Inactive</option>
         </select>
 
-        <button type="submit" class="btn btn-secondary">
+        <button type="submit" class="btn btn-secondary flex items-center gap-2">
+            <i class="gg-search"></i>
             <span class="terminal-text">Apply</span>
         </button>
     </form>
@@ -79,22 +82,26 @@
                             @endif
                         </td>
                         <td class="p-3 space-x-2">
-                            <a href="{{ route('admin.chapters.show', $chapter) }}" class="btn btn-secondary btn-sm">
+                            <a href="{{ route('admin.chapters.show', $chapter) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-2">
+                                <i class="gg-eye"></i>
                                 <span class="terminal-text">View</span>
                             </a>
                             <form action="{{ route('admin.manga.chapters.toggle-active', [$chapter->manga, $chapter]) }}" method="POST" class="inline-block">
                                 @csrf
-                                <button type="submit" class="btn btn-sm {{ $chapter->is_active ? 'btn-danger' : 'btn-primary' }}">
+                                <button type="submit" class="btn btn-sm {{ $chapter->is_active ? 'btn-danger' : 'btn-primary' }} inline-flex items-center gap-2">
+                                    <i class="{{ $chapter->is_active ? 'gg-toggle-off' : 'gg-toggle-on' }}"></i>
                                     <span class="terminal-text">{{ $chapter->is_active ? 'Deactivate' : 'Activate' }}</span>
                                 </button>
                             </form>
-                            <a href="{{ route('admin.manga.chapters.edit', [$chapter->manga, $chapter]) }}" class="btn btn-secondary btn-sm">
+                            <a href="{{ route('admin.manga.chapters.edit', [$chapter->manga, $chapter]) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-2">
+                                <i class="gg-pen"></i>
                                 <span class="terminal-text">Edit</span>
                             </a>
                             <form action="{{ route('admin.manga.chapters.destroy', [$chapter->manga, $chapter]) }}" method="POST" class="inline-block" onsubmit="return confirm('Delete this chapter?');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">
+                                <button type="submit" class="btn btn-danger btn-sm inline-flex items-center gap-2">
+                                    <i class="gg-trash"></i>
                                     <span class="terminal-text">Delete</span>
                                 </button>
                             </form>

@@ -10,6 +10,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href='https://css.gg/css' rel='stylesheet'>
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -33,13 +34,13 @@
 
                 <!-- Desktop Navigation -->
                 <div class="hidden md:flex md:items-center md:space-x-6">
-                    <a href="{{ route('manga.index') }}" class="nav-link text-future uppercase tracking-wide hover:text-radiation-yellow transition-all">
-                        <span class="text-glow-green">█</span> Browse
+                    <a href="{{ route('manga.index') }}" class="nav-link text-future uppercase tracking-wide hover:text-radiation-yellow transition-all flex items-center gap-2">
+                        <i class="gg-layout-grid"></i> Browse
                     </a>
 
                     @auth
-                        <a href="{{ route('admin.dashboard') }}" class="nav-link text-future uppercase tracking-wide hover:text-radiation-yellow transition-all">
-                            <span class="text-glow-green">█</span> Admin
+                        <a href="{{ route('admin.dashboard') }}" class="nav-link text-future uppercase tracking-wide hover:text-radiation-yellow transition-all flex items-center gap-2">
+                            <i class="gg-terminal"></i> Admin
                         </a>
                     @endauth
 
@@ -62,9 +63,7 @@
                 <!-- Mobile Menu Button -->
                 <div class="md:hidden">
                     <button id="mobile-menu-button" type="button" class="btn p-2">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
+                        <i class="gg-menu"></i>
                     </button>
                 </div>
             </div>
@@ -102,7 +101,7 @@
             @if(session('success'))
                 <div class="alert alert-success fade-in">
                     <div class="flex items-center">
-                        <span class="text-2xl mr-3">✓</span>
+                        <i class="gg-check-o mr-3"></i>
                         <span>{{ session('success') }}</span>
                     </div>
                 </div>
@@ -111,7 +110,7 @@
             @if(session('error'))
                 <div class="alert alert-danger fade-in">
                     <div class="flex items-center">
-                        <span class="text-2xl mr-3">✗</span>
+                        <i class="gg-close-o mr-3"></i>
                         <span>{{ session('error') }}</span>
                     </div>
                 </div>
@@ -120,7 +119,7 @@
             @if(session('warning'))
                 <div class="alert alert-warning fade-in">
                     <div class="flex items-center">
-                        <span class="text-2xl mr-3">⚠</span>
+                        <i class="gg-danger mr-3"></i>
                         <span>{{ session('warning') }}</span>
                     </div>
                 </div>
@@ -129,7 +128,7 @@
             @if(session('info'))
                 <div class="alert alert-success fade-in">
                     <div class="flex items-center">
-                        <span class="text-2xl mr-3">ℹ</span>
+                        <i class="gg-info mr-3"></i>
                         <span>{{ session('info') }}</span>
                     </div>
                 </div>
@@ -159,10 +158,10 @@
                 <div>
                     <h4 class="text-lg mb-4 text-future uppercase text-radiation-yellow">Quick Access</h4>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="{{ route('manga.index') }}" class="hover:text-pip-green transition-colors">█ Browse Manga</a></li>
+                        <li><a href="{{ route('manga.index') }}" class="hover:text-pip-green transition-colors flex items-center gap-2"><i class="gg-layout-grid"></i> Browse Manga</a></li>
                         @auth
-                            <li><a href="{{ route('admin.dashboard') }}" class="hover:text-pip-green transition-colors">█ Admin Panel</a></li>
-                            <li><a href="{{ route('admin.manga.index') }}" class="hover:text-pip-green transition-colors">█ Manage Manga</a></li>
+                            <li><a href="{{ route('admin.dashboard') }}" class="hover:text-pip-green transition-colors flex items-center gap-2"><i class="gg-terminal"></i> Admin Panel</a></li>
+                            <li><a href="{{ route('admin.manga.index') }}" class="hover:text-pip-green transition-colors flex items-center gap-2"><i class="gg-list"></i> Manage Manga</a></li>
                         @endauth
                     </ul>
                 </div>

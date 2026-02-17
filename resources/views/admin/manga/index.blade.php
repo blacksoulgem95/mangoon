@@ -7,7 +7,8 @@
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-future text-3xl font-semibold text-pip-green">Manga Management</h1>
-        <a href="{{ route('admin.manga.create') }}" class="btn btn-primary">
+        <a href="{{ route('admin.manga.create') }}" class="btn btn-primary flex items-center gap-2">
+            <i class="gg-add"></i>
             <span class="terminal-text">Add New Manga</span>
         </a>
     </div>
@@ -28,7 +29,8 @@
             <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>Active</option>
             <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Inactive</option>
         </select>
-        <button type="submit" class="btn btn-secondary">
+        <button type="submit" class="btn btn-secondary flex items-center gap-2">
+            <i class="gg-search"></i>
             <span class="terminal-text">Apply</span>
         </button>
     </form>
@@ -77,13 +79,15 @@
                             @endif
                         </td>
                         <td class="p-3 space-x-2">
-                            <a href="{{ route('admin.manga.edit', $manga) }}" class="btn btn-secondary btn-sm">
+                            <a href="{{ route('admin.manga.edit', $manga) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-2">
+                                <i class="gg-pen"></i>
                                 <span class="terminal-text">Edit</span>
                             </a>
                             <form method="POST" action="{{ route('admin.manga.destroy', $manga) }}" class="inline-block" onsubmit="return confirm('Delete this manga?');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">
+                                <button type="submit" class="btn btn-danger btn-sm inline-flex items-center gap-2">
+                                    <i class="gg-trash"></i>
                                     <span class="terminal-text">Delete</span>
                                 </button>
                             </form>

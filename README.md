@@ -89,3 +89,7 @@ The creator takes no responsibility for:
 
 ---
 *Built with 💚 and slightly questionable naming conventions by Sofia Vicedomini.*
+
+Still reading chum, ay? why don't you toss a coin to your developer?
+
+<iframe id='kofiframe' src='https://ko-fi.com/blacksoulgem95/?hidefeed=true&widget=true&embed=true&preview=true' style='border:none;width:100%;padding:4px;background:#f9f9f9;' height='712' title='blacksoulgem95'></iframe>

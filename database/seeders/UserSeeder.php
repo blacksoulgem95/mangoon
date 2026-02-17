@@ -13,20 +13,23 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        // Ensure the admin role exists before assigning it
+        $adminRole = \App\Models\Role::admin();
+
         $admin = User::updateOrCreate(
-            ['email' => 'admin@mangoon.test'],
+            ["email" => "admin@mangoon.test"],
             [
-                'name' => 'Administrator',
-                'password' => Hash::make('changeme,1'),
-                'email_verified_at' => now(),
-            ]
+                "name" => "Administrator",
+                "password" => Hash::make("changeme,1"),
+                "email_verified_at" => now(),
+            ],
         );
 
         // Assign admin role using the helper method in User model
-        $admin->assignRole('admin');
+        $admin->assignRole($adminRole); // Assign the role model instance
 
-        $this->command->info('Admin user seeded successfully.');
-        $this->command->info('Email: admin@mangoon.test');
-        $this->command->info('Password: changeme,1');
+        $this->command->info("Admin user seeded successfully.");
+        $this->command->info("Email: admin@mangoon.test");
+        $this->command->info("Password: changeme,1");
     }
 }

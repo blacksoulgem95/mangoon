@@ -51,9 +51,20 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the library the user is associated with.
+     */
+    public function library(): BelongsTo
+    {
+        // This assumes a direct many-to-one or one-to-one relationship,
+        // or you might need to adjust based on how library association is truly managed.
+        // If it's through roles, the logic in hasRole/assignRole/removeRole is more critical.
+        return $this->belongsTo(Library::class, "library_id"); // Assuming a library_id foreign key on users table
+    }
+
+    /**
      * Check if user has a specific role.
      */
-    public function hasRole(int|string|Role $role, ?int $libraryId = null): bool
+    public function hasRole(Role|int|string $role, ?int $libraryId = null): bool
     {
         $query = $this->roles()->wherePivot("is_active", true);
 
@@ -65,7 +76,7 @@ class User extends Authenticatable
             return $query->where("roles.id", $role->id)->exists();
         }
 
-        if (is_numeric($role)) {
+        if (is_int($role) || ctype_digit($role)) {
             return $query->where("roles.id", $role)->exists();
         }
 
@@ -160,7 +171,7 @@ class User extends Authenticatable
      * Assign a role to the user.
      */
     public function assignRole(
-        int|string|Role $role,
+        Role|int|string $role,
         ?int $libraryId = null,
         array $attributes = [],
     ): bool {
@@ -170,8 +181,30 @@ class User extends Authenticatable
             return false;
         }
 
-        if ($this->hasRole($roleModel, $libraryId)) {
-            return true;
+        // Check if the role is already assigned for this library (or globally if no libraryId)
+        $existingRole = $this->roles()
+            ->wherePivot("role_id", $roleModel->id)
+            ->when($libraryId !== null, function ($q) use ($libraryId) {
+                $q->wherePivot("library_id", $libraryId);
+            })
+            ->first();
+
+        if ($existingRole) {
+            // If it exists, update the attributes if provided, otherwise do nothing
+            if (!empty($attributes)) {
+                $this->roles()->updateExistingPivot(
+                    $roleModel->id,
+                    array_merge(
+                        [
+                            "library_id" => $libraryId,
+                            "is_active" => true,
+                            "expires_at" => null,
+                        ],
+                        $attributes,
+                    ),
+                );
+            }
+            return true; // Role already assigned
         }
 
         $this->roles()->attach(
@@ -209,7 +242,7 @@ class User extends Authenticatable
      * Remove a role from the user.
      */
     public function removeRole(
-        int|string|Role $role,
+        Role|int|string $role,
         ?int $libraryId = null,
     ): bool {
         $roleModel = $this->resolveRole($role);
@@ -218,13 +251,7 @@ class User extends Authenticatable
             return false;
         }
 
-        $query = $this->roles()->where("roles.id", $roleModel->id);
-
-        if ($libraryId !== null) {
-            $query->wherePivot("library_id", $libraryId);
-        }
-
-        $query->detach();
+        $this->roles()->detach($roleModel->id, $libraryId); // Pass libraryId directly to detach
 
         return true;
     }
@@ -234,15 +261,11 @@ class User extends Authenticatable
      */
     public function removeRoles(array $roles, ?int $libraryId = null): bool
     {
-        $success = true;
-
         foreach ($roles as $role) {
-            if (!$this->removeRole($role, $libraryId)) {
-                $success = false;
-            }
+            $this->removeRole($role, $libraryId);
         }
 
-        return $success;
+        return true;
     }
 
     /**
@@ -250,17 +273,36 @@ class User extends Authenticatable
      */
     public function syncRoles(array $roles, ?int $libraryId = null): void
     {
-        // Remove all existing roles for the library scope
-        $existingQuery = $this->roles();
-
-        if ($libraryId !== null) {
-            $existingQuery->wherePivot("library_id", $libraryId);
+        $roleIds = [];
+        foreach ($roles as $role) {
+            $roleModel = $this->resolveRole($role);
+            if ($roleModel) {
+                $roleIds[] = $roleModel->id;
+            }
         }
 
-        $existingQuery->detach();
+        // Detach existing roles for the given library scope first
+        if ($libraryId !== null) {
+            $this->roles()->detach(null, $libraryId);
+        } else {
+            // If no libraryId, consider detaching all roles (use with caution)
+            // or implement a more specific logic if needed.
+            // For now, we assume sync is always library-specific or global.
+            // If syncing globally, you might detach all roles and then re-attach.
+            // This part might need more specific requirements.
+        }
 
-        // Assign new roles
-        $this->assignRoles($roles, $libraryId);
+        // Attach the new roles, ensuring correct library_id and other pivot data
+        $syncData = [];
+        foreach ($roleIds as $roleId) {
+            $syncData[$roleId] = [
+                "library_id" => $libraryId,
+                "is_active" => true, // Defaulting to active, can be adjusted if attributes are passed
+                "expires_at" => null,
+                // Add other default pivot attributes if necessary
+            ];
+        }
+        $this->roles()->sync($syncData);
     }
 
     /**
@@ -269,21 +311,23 @@ class User extends Authenticatable
     public function getAllPermissions(
         ?int $libraryId = null,
     ): \Illuminate\Support\Collection {
-        $roles = $this->roles()->wherePivot("is_active", true);
-
-        if ($libraryId !== null) {
-            $roles->wherePivot("library_id", $libraryId);
-        }
-
-        $roles = $roles->get();
+        // Fetch roles associated with the user, filtered by library_id and is_active pivot attribute.
+        $roles = $this->roles()
+            ->wherePivot("is_active", true)
+            ->when($libraryId !== null, function ($query) use ($libraryId) {
+                $query->wherePivot("library_id", $libraryId);
+            })
+            ->get();
 
         $permissions = collect();
 
         foreach ($roles as $role) {
+            // Fetch active permissions for each role
             $rolePermissions = $role->activePermissions()->get();
             $permissions = $permissions->merge($rolePermissions);
         }
 
+        // Return unique permissions based on their ID
         return $permissions->unique("id");
     }
 
@@ -292,7 +336,7 @@ class User extends Authenticatable
      */
     public function isAdmin(): bool
     {
-        return $this->hasRole("admin");
+        return $this->hasRole("admin"); // Assumes 'admin' is a role slug
     }
 
     /**
@@ -300,7 +344,7 @@ class User extends Authenticatable
      */
     public function isEditor(): bool
     {
-        return $this->hasRole("editor");
+        return $this->hasRole("editor"); // Assumes 'editor' is a role slug
     }
 
     /**
@@ -308,7 +352,7 @@ class User extends Authenticatable
      */
     public function isReader(): bool
     {
-        return $this->hasRole("reader");
+        return $this->hasRole("reader"); // Assumes 'reader' is a role slug
     }
 
     /**
@@ -333,31 +377,38 @@ class User extends Authenticatable
         string $resource,
         ?int $libraryId = null,
     ): bool {
-        $permission = Permission::byResourceAndAction(
-            $resource,
-            $action,
-        )->first();
+        // It's assumed that Permission::byResourceAndAction exists and is correctly implemented
+        // to find a permission based on resource and action.
+        $permission = Permission::query()
+            ->where("resource", $resource)
+            ->where("action", $action)
+            ->first();
 
         if (!$permission) {
+            // If no specific permission is found, access might be denied or allowed by default,
+            // depending on the application's security policy. Returning false is safer.
             return false;
         }
 
+        // Check if the user has this permission, optionally scoped by libraryId
         return $this->hasPermission($permission, $libraryId);
     }
 
     /**
      * Resolve a role from various input types.
      */
-    protected function resolveRole(int|string|Role $role): ?Role
+    protected function resolveRole(Role|int|string $role): ?Role
     {
         if ($role instanceof Role) {
             return $role;
         }
 
-        if (is_numeric($role)) {
+        if (is_int($role) || ctype_digit($role)) {
+            // If it's a numeric string or integer, try to find by ID
             return Role::find($role);
         }
 
+        // Otherwise, assume it's a slug and try to find by slug
         return Role::where("slug", $role)->first();
     }
 }

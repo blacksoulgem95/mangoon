@@ -19,10 +19,10 @@ class Tag extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'slug',
-        'color',
-        'is_active',
-        'sort_order',
+        "slug",
+        "color",
+        "is_active",
+        "sort_order",
     ];
 
     /**
@@ -33,8 +33,8 @@ class Tag extends Model
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean',
-            'sort_order' => 'integer',
+            "is_active" => "boolean",
+            "sort_order" => "integer",
         ];
     }
 
@@ -51,10 +51,10 @@ class Tag extends Model
      */
     public function mangas(): BelongsToMany
     {
-        return $this->belongsToMany(Manga::class, 'manga_tag')
-            ->withPivot('sort_order')
+        return $this->belongsToMany(Manga::class, "manga_tag")
+            ->withPivot("sort_order")
             ->withTimestamps()
-            ->orderByPivot('sort_order');
+            ->orderByPivot("sort_order");
     }
 
     /**
@@ -62,7 +62,7 @@ class Tag extends Model
      */
     public function scopeActive($query): void
     {
-        $query->where('is_active', true);
+        $query->where("is_active", true);
     }
 
     /**
@@ -70,19 +70,20 @@ class Tag extends Model
      */
     public function scopeOrdered($query): void
     {
-        $query->orderBy('sort_order');
+        $query->orderBy("sort_order");
     }
 
     /**
      * Scope a query to search by translated name.
      */
+     */
     public function scopeSearchByName($query, string $search, ?string $languageCode = null): void
     {
-        $query->whereHas('translations', function ($q) use ($search, $languageCode) {
-            $q->where('name', 'like', "%{$search}%");
+        $query->whereHas("translations", function ($q) use ($search, $languageCode) {
+            $q->where("name", "like", "%{$search}%");
 
             if ($languageCode) {
-                $q->where('language_code', $languageCode);
+                $q->where("language_code", $languageCode);
             }
         });
     }
@@ -90,15 +91,18 @@ class Tag extends Model
     /**
      * Scope a query to filter by language.
      */
+     */
     public function scopeWithTranslation($query, ?string $languageCode = null): void
     {
         if ($languageCode === null) {
             $languageCode = app()->getLocale();
         }
 
-        $query->with(['translations' => function ($q) use ($languageCode) {
-            $q->where('language_code', $languageCode);
-        }]);
+        $query->with([
+            "translations" => function ($q) use ($languageCode) {
+                $q->where("language_code", $languageCode);
+            },
+        ]);
     }
 
     /**
@@ -110,7 +114,9 @@ class Tag extends Model
             $languageCode = app()->getLocale();
         }
 
-        return $this->translations()->where('language_code', $languageCode)->first();
+        return $this->translations()
+            ->where("language_code", $languageCode)
+            ->first();
     }
 
     /**
@@ -161,8 +167,8 @@ class Tag extends Model
     public static function popular(int $limit = 20): \Illuminate\Database\Eloquent\Collection
     {
         return static::active()
-            ->withCount('mangas')
-            ->orderByDesc('mangas_count')
+            ->withCount("mangas")
+            ->orderByDesc("mangas_count")
             ->limit($limit)
             ->get();
     }
@@ -180,7 +186,7 @@ class Tag extends Model
      */
     public function getRouteKeyName(): string
     {
-        return 'slug';
+        return "slug";
     }
 
     /**
@@ -189,18 +195,23 @@ class Tag extends Model
     public static function createWithTranslation(
         string $slug,
         string $name,
-        string $languageCode = 'en',
-        array $attributes = []
+        string $languageCode = "en",
+        array $attributes = [],
     ): self {
-        $tag = static::create(array_merge([
-            'slug' => $slug,
-            'is_active' => true,
-            'sort_order' => 0,
-        ], $attributes));
+        $tag = static::create(
+            array_merge(
+                [
+                    "slug" => $slug,
+                    "is_active" => true,
+                    "sort_order" => 0,
+                ],
+                $attributes,
+            ),
+        );
 
         $tag->translations()->create([
-            'language_code' => $languageCode,
-            'name' => $name,
+            "language_code" => $languageCode,
+            "name" => $name,
         ]);
 
         return $tag;

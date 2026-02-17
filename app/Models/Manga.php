@@ -20,28 +20,28 @@ class Manga extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'slug',
-        'source_id',
-        'author',
-        'illustrator',
-        'publication_year',
-        'publication_date',
-        'original_language',
-        'status',
-        'type',
-        'cover_image',
-        'banner_image',
-        'total_chapters',
-        'total_volumes',
-        'rating',
-        'views_count',
-        'favorites_count',
-        'isbn',
-        'publisher',
-        'metadata',
-        'is_active',
-        'is_featured',
-        'is_mature',
+        "slug",
+        "source_id",
+        "author",
+        "illustrator",
+        "publication_year",
+        "publication_date",
+        "original_language",
+        "status",
+        "type",
+        "cover_image",
+        "banner_image",
+        "total_chapters",
+        "total_volumes",
+        "rating",
+        "views_count",
+        "favorites_count",
+        "isbn",
+        "publisher",
+        "metadata",
+        "is_active",
+        "is_featured",
+        "is_mature",
     ];
 
     /**
@@ -52,17 +52,17 @@ class Manga extends Model
     protected function casts(): array
     {
         return [
-            'publication_date' => 'date',
-            'publication_year' => 'integer',
-            'total_chapters' => 'integer',
-            'total_volumes' => 'integer',
-            'rating' => 'decimal:2',
-            'views_count' => 'integer',
-            'favorites_count' => 'integer',
-            'metadata' => 'array',
-            'is_active' => 'boolean',
-            'is_featured' => 'boolean',
-            'is_mature' => 'boolean',
+            "publication_date" => "date",
+            "publication_year" => "integer",
+            "total_chapters" => "integer",
+            "total_volumes" => "integer",
+            "rating" => "decimal:2",
+            "views_count" => "integer",
+            "favorites_count" => "integer",
+            "metadata" => "array",
+            "is_active" => "boolean",
+            "is_featured" => "boolean",
+            "is_mature" => "boolean",
         ];
     }
 
@@ -95,7 +95,7 @@ class Manga extends Model
      */
     public function relatedVersions(): HasMany
     {
-        return $this->hasMany(MangaVersion::class, 'related_manga_id');
+        return $this->hasMany(MangaVersion::class, "related_manga_id");
     }
 
     /**
@@ -111,10 +111,10 @@ class Manga extends Model
      */
     public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(Tag::class, 'manga_tag')
-            ->withPivot('sort_order')
+        return $this->belongsToMany(Tag::class, "manga_tag")
+            ->withPivot("sort_order")
             ->withTimestamps()
-            ->orderByPivot('sort_order');
+            ->orderByPivot("sort_order");
     }
 
     /**
@@ -122,10 +122,10 @@ class Manga extends Model
      */
     public function categories(): BelongsToMany
     {
-        return $this->belongsToMany(Category::class, 'category_manga')
-            ->withPivot('sort_order')
+        return $this->belongsToMany(Category::class, "category_manga")
+            ->withPivot("sort_order")
             ->withTimestamps()
-            ->orderByPivot('sort_order');
+            ->orderByPivot("sort_order");
     }
 
     /**
@@ -133,10 +133,10 @@ class Manga extends Model
      */
     public function libraries(): BelongsToMany
     {
-        return $this->belongsToMany(Library::class, 'library_manga')
-            ->withPivot('sort_order', 'is_featured', 'added_at')
+        return $this->belongsToMany(Library::class, "library_manga")
+            ->withPivot("sort_order", "is_featured", "added_at")
             ->withTimestamps()
-            ->orderByPivot('sort_order');
+            ->orderByPivot("sort_order");
     }
 
     /**
@@ -144,7 +144,7 @@ class Manga extends Model
      */
     public function scopeActive($query): void
     {
-        $query->where('is_active', true);
+        $query->where("is_active", true);
     }
 
     /**
@@ -152,7 +152,7 @@ class Manga extends Model
      */
     public function scopeFeatured($query): void
     {
-        $query->where('is_featured', true);
+        $query->where("is_featured", true);
     }
 
     /**
@@ -160,7 +160,7 @@ class Manga extends Model
      */
     public function scopeMature($query): void
     {
-        $query->where('is_mature', true);
+        $query->where("is_mature", true);
     }
 
     /**
@@ -168,7 +168,7 @@ class Manga extends Model
      */
     public function scopeSafe($query): void
     {
-        $query->where('is_mature', false);
+        $query->where("is_mature", false);
     }
 
     /**
@@ -176,7 +176,7 @@ class Manga extends Model
      */
     public function scopeByStatus($query, string $status): void
     {
-        $query->where('status', $status);
+        $query->where("status", $status);
     }
 
     /**
@@ -184,7 +184,7 @@ class Manga extends Model
      */
     public function scopeByType($query, string $type): void
     {
-        $query->where('type', $type);
+        $query->where("type", $type);
     }
 
     /**
@@ -192,7 +192,7 @@ class Manga extends Model
      */
     public function scopeByLanguage($query, string $language): void
     {
-        $query->where('original_language', $language);
+        $query->where("original_language", $language);
     }
 
     /**
@@ -200,7 +200,7 @@ class Manga extends Model
      */
     public function scopePopular($query): void
     {
-        $query->orderByDesc('rating')->orderByDesc('views_count');
+        $query->orderByDesc("rating")->orderByDesc("views_count");
     }
 
     /**
@@ -208,7 +208,7 @@ class Manga extends Model
      */
     public function scopeMostViewed($query): void
     {
-        $query->orderByDesc('views_count');
+        $query->orderByDesc("views_count");
     }
 
     /**
@@ -216,7 +216,7 @@ class Manga extends Model
      */
     public function scopeMostFavorited($query): void
     {
-        $query->orderByDesc('favorites_count');
+        $query->orderByDesc("favorites_count");
     }
 
     /**
@@ -224,19 +224,22 @@ class Manga extends Model
      */
     public function scopeLatest($query): void
     {
-        $query->orderByDesc('created_at');
+        $query->orderByDesc("created_at");
     }
 
     /**
      * Get translation for a specific language.
      */
-    public function getTranslation(?string $languageCode = null): ?MangaTranslation
-    {
+    public function getTranslation(
+        ?string $languageCode = null,
+    ): ?MangaTranslation {
         if ($languageCode === null) {
             $languageCode = app()->getLocale();
         }
 
-        return $this->translations()->where('language_code', $languageCode)->first();
+        return $this->translations()
+            ->where("language_code", $languageCode)
+            ->first();
     }
 
     /**
@@ -293,13 +296,14 @@ class Manga extends Model
     /**
      * Get all related manga versions by relationship type.
      */
-    public function getRelatedVersions(string $type = 'translation'): \Illuminate\Database\Eloquent\Collection
-    {
+    public function getRelatedVersions(
+        string $type = "translation",
+    ): \Illuminate\Database\Eloquent\Collection {
         return $this->versions()
-            ->where('relationship_type', $type)
-            ->with('relatedManga')
+            ->where("relationship_type", $type)
+            ->with("relatedManga")
             ->get()
-            ->pluck('relatedManga');
+            ->pluck("relatedManga");
     }
 
     /**
@@ -308,10 +312,10 @@ class Manga extends Model
     public function hasTag(int|string $tagIdOrSlug): bool
     {
         if (is_numeric($tagIdOrSlug)) {
-            return $this->tags()->where('tags.id', $tagIdOrSlug)->exists();
+            return $this->tags()->where("tags.id", $tagIdOrSlug)->exists();
         }
 
-        return $this->tags()->where('tags.slug', $tagIdOrSlug)->exists();
+        return $this->tags()->where("tags.slug", $tagIdOrSlug)->exists();
     }
 
     /**
@@ -320,10 +324,14 @@ class Manga extends Model
     public function inCategory(int|string $categoryIdOrSlug): bool
     {
         if (is_numeric($categoryIdOrSlug)) {
-            return $this->categories()->where('categories.id', $categoryIdOrSlug)->exists();
+            return $this->categories()
+                ->where("categories.id", $categoryIdOrSlug)
+                ->exists();
         }
 
-        return $this->categories()->where('categories.slug', $categoryIdOrSlug)->exists();
+        return $this->categories()
+            ->where("categories.slug", $categoryIdOrSlug)
+            ->exists();
     }
 
     /**
@@ -332,10 +340,14 @@ class Manga extends Model
     public function inLibrary(int|string $libraryIdOrSlug): bool
     {
         if (is_numeric($libraryIdOrSlug)) {
-            return $this->libraries()->where('libraries.id', $libraryIdOrSlug)->exists();
+            return $this->libraries()
+                ->where("libraries.id", $libraryIdOrSlug)
+                ->exists();
         }
 
-        return $this->libraries()->where('libraries.slug', $libraryIdOrSlug)->exists();
+        return $this->libraries()
+            ->where("libraries.slug", $libraryIdOrSlug)
+            ->exists();
     }
 
     /**
@@ -343,7 +355,7 @@ class Manga extends Model
      */
     public function incrementViews(int $count = 1): bool
     {
-        return $this->increment('views_count', $count);
+        return $this->increment("views_count", $count);
     }
 
     /**
@@ -351,7 +363,7 @@ class Manga extends Model
      */
     public function incrementFavorites(int $count = 1): bool
     {
-        return $this->increment('favorites_count', $count);
+        return $this->increment("favorites_count", $count);
     }
 
     /**
@@ -359,7 +371,7 @@ class Manga extends Model
      */
     public function decrementFavorites(int $count = 1): bool
     {
-        return $this->decrement('favorites_count', $count);
+        return $this->decrement("favorites_count", $count);
     }
 
     /**
@@ -377,6 +389,6 @@ class Manga extends Model
      */
     public function getRouteKeyName(): string
     {
-        return 'slug';
+        return "slug";
     }
 }

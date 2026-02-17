@@ -409,15 +409,23 @@ class PermissionSeeder extends Seeder
      */
     protected function assignPermissionsToRoles(array $permissions): void
     {
+    protected function assignPermissionsToRoles(array $permissions): void
+    {
         // Admin - all permissions
-        $admin = Role::where("slug", "admin")->first();
+        $admin = Role::admin(); // Ensure admin role exists
         if ($admin) {
-            $admin->permissions()->sync(collect($permissions)->pluck("id"));
+            $admin
+                ->permissions()
+                ->sync(
+                    collect($permissions)
+                        ->map(fn($permission) => $permission->id)
+                        ->all(),
+                );
             $this->command->info("Admin role: all permissions assigned");
         }
 
         // Editor - content management permissions
-        $editor = Role::where("slug", "editor")->first();
+        $editor = Role::editor(); // Ensure editor role exists
         if ($editor) {
             $editorPermissions = [
                 "manga.view",
@@ -447,7 +455,7 @@ class PermissionSeeder extends Seeder
         }
 
         // Reader - viewing permissions only
-        $reader = Role::where("slug", "reader")->first();
+        $reader = Role::reader(); // Ensure reader role exists
         if ($reader) {
             $readerPermissions = [
                 "manga.view",
@@ -467,7 +475,19 @@ class PermissionSeeder extends Seeder
         }
 
         // Moderator - moderation permissions
-        $moderator = Role::where("slug", "moderator")->first();
+        $moderator = Role::firstOrCreate(
+            // Use firstOrCreate for moderator
+            ["slug" => "moderator"],
+            [
+                "name" => "Moderator",
+                "description" => "Moderator with content review permissions",
+                "guard_name" => "web",
+                "level" => 75,
+                "is_active" => true,
+                "is_system" => false,
+            ],
+        );
+        // Ensure moderator role exists before assigning permissions
         if ($moderator) {
             $moderatorPermissions = [
                 "manga.view",
@@ -497,7 +517,20 @@ class PermissionSeeder extends Seeder
         }
 
         // Contributor - limited content creation permissions
-        $contributor = Role::where("slug", "contributor")->first();
+        $contributor = Role::firstOrCreate(
+            // Use firstOrCreate for contributor
+            ["slug" => "contributor"],
+            [
+                "name" => "Contributor",
+                "description" =>
+                    "Contributor with limited content creation permissions",
+                "guard_name" => "web",
+                "level" => 25,
+                "is_active" => true,
+                "is_system" => false,
+            ],
+        );
+        // Ensure contributor role exists before assigning permissions
         if ($contributor) {
             $contributorPermissions = [
                 "manga.view",

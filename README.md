@@ -92,4 +92,4 @@ The creator takes no responsibility for:
 
 Still reading chum, ay? why don't you toss a coin to your developer?
 
-<iframe id='kofiframe' src='https://ko-fi.com/blacksoulgem95/?hidefeed=true&widget=true&embed=true&preview=true' style='border:none;width:100%;padding:4px;background:#f9f9f9;' height='712' title='blacksoulgem95'></iframe>
+[![Buy Me a Focaccia](https://storage.ko-fi.com/cdn/kofi5.png?v=6)](https://ko-fi.com/Q5Q1AEQQK)

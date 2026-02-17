@@ -1,0 +1,114 @@
+{{-- resources/views/admin/categories/edit.blade.php --}}
+@extends('layouts.app')
+
+@section('title', ' • Admin: Edit Category')
+
+@section('content')
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-future text-3xl font-semibold text-pip-green">Edit Category - {{ $category->name }}</h1>
+
+        <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary flex items-center gap-2">
+            <i class="gg-arrow-left"></i>
+            <span class="terminal-text">Back to Categories</span>
+        </a>
+    </div>
+
+    <div class="panel p-6">
+        <form action="{{ route('admin.categories.update', $category) }}" method="POST">
+            @csrf
+            @method('PUT')
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {{-- Category Name --}}
+                <div>
+                    <label for="name" class="block text-text-primary text-sm font-medium mb-2">Category Name <span class="text-red-500">*</span></label>
+                    <input type="text" name="name" id="name" class="form-input" value="{{ old('name', $category->name) }}" required>
+                    @error('name')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Slug --}}
+                <div>
+                    <label for="slug" class="block text-text-primary text-sm font-medium mb-2">Slug <span class="text-red-500">*</span></label>
+                    <input type="text" name="slug" id="slug" class="form-input" value="{{ old('slug', $category->slug) }}" required>
+                    @error('slug')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Parent Category --}}
+                <div>
+                    <label for="parent_id" class="block text-text-primary text-sm font-medium mb-2">Parent Category (Optional)</label>
+                    <select name="parent_id" id="parent_id" class="form-select">
+                        <option value="">No Parent</option>
+                        @foreach($parents as $parent)
+                            <option value="{{ $parent->id }}" {{ old('parent_id', $category->parent_id) == $parent->id ? 'selected' : '' }}>
+                                {{ $parent->getName() }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('parent_id')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Icon (Optional) --}}
+                <div>
+                    <label for="icon" class="block text-text-primary text-sm font-medium mb-2">Icon (e.g., gg-book)</label>
+                    <input type="text" name="icon" id="icon" class="form-input" value="{{ old('icon', $category->icon) }}" placeholder="gg-book">
+                    @error('icon')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Color (Hex Code) --}}
+                <div>
+                    <label for="color" class="block text-text-primary text-sm font-medium mb-2">Color (Hex, e.g., #RRGGBB)</label>
+                    <input type="text" name="color" id="color" class="form-input" value="{{ old('color', $category->color) }}" placeholder="#000000">
+                    @error('color')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Sort Order --}}
+                <div>
+                    <label for="sort_order" class="block text-text-primary text-sm font-medium mb-2">Sort Order</label>
+                    <input type="number" name="sort_order" id="sort_order" class="form-input" value="{{ old('sort_order', $category->sort_order) }}">
+                    @error('sort_order')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Is Active --}}
+                <div class="md:col-span-2">
+                    <label for="is_active" class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" name="is_active" id="is_active" class="form-checkbox" {{ old('is_active', $category->is_active) ? 'checked' : '' }}>
+                        <span class="text-text-primary text-sm font-medium">Is Active</span>
+                    </label>
+                    @error('is_active')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Description --}}
+                <div class="md:col-span-2">
+                    <label for="description" class="block text-text-primary text-sm font-medium mb-2">Description (Optional)</label>
+                    <textarea name="description" id="description" rows="4" class="form-textarea">{{ old('description', $category->description) }}</textarea>
+                    @error('description')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="flex justify-end mt-6">
+                <button type="submit" class="btn btn-primary flex items-center gap-2">
+                    <i class="gg-check"></i>
+                    <span class="terminal-text">Update Category</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection

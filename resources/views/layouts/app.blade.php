@@ -42,6 +42,18 @@
                         <a href="{{ route('admin.dashboard') }}" class="nav-link text-future uppercase tracking-wide hover:text-radiation-yellow transition-all flex items-center gap-2">
                             <i class="gg-terminal"></i> Admin
                         </a>
+                        <a href="{{ route('admin.manga.index') }}" class="nav-link text-future uppercase tracking-wide hover:text-radiation-yellow transition-all flex items-center gap-2">
+                            <i class="gg-list"></i> Manage Manga
+                        </a>
+                        <a href="{{ route('admin.categories.index') }}" class="nav-link text-future uppercase tracking-wide hover:text-radiation-yellow transition-all flex items-center gap-2">
+                            <i class="gg-folder"></i> Manage Categories
+                        </a>
+                        <a href="{{ route('admin.tags.index') }}" class="nav-link text-future uppercase tracking-wide hover:text-radiation-yellow transition-all flex items-center gap-2">
+                            <i class="gg-tag"></i> Manage Tags
+                        </a>
+                        <a href="{{ route('admin.libraries.index') }}" class="nav-link text-future uppercase tracking-wide hover:text-radiation-yellow transition-all flex items-center gap-2">
+                            <i class="gg-layout-grid"></i> Manage Libraries
+                        </a>
                     @endauth
 
                     <div class="flex items-center space-x-3 pl-6 border-l-2 border-border">
@@ -79,6 +91,18 @@
                 @auth
                     <a href="{{ route('admin.dashboard') }}" class="block px-4 py-3 panel text-center text-future uppercase tracking-wide hover:text-radiation-yellow transition-all">
                         Admin Panel
+                    </a>
+                    <a href="{{ route('admin.manga.index') }}" class="block px-4 py-3 panel text-center text-future uppercase tracking-wide hover:text-radiation-yellow transition-all">
+                        Manage Manga
+                    </a>
+                    <a href="{{ route('admin.categories.index') }}" class="block px-4 py-3 panel text-center text-future uppercase tracking-wide hover:text-radiation-yellow transition-all">
+                        Manage Categories
+                    </a>
+                    <a href="{{ route('admin.tags.index') }}" class="block px-4 py-3 panel text-center text-future uppercase tracking-wide hover:text-radiation-yellow transition-all">
+                        Manage Tags
+                    </a>
+                    <a href="{{ route('admin.libraries.index') }}" class="block px-4 py-3 panel text-center text-future uppercase tracking-wide hover:text-radiation-yellow transition-all">
+                        Manage Libraries
                     </a>
                     <form method="POST" action="{{ route('logout') }}" class="block">
                         @csrf
@@ -162,6 +186,9 @@
                         @auth
                             <li><a href="{{ route('admin.dashboard') }}" class="hover:text-pip-green transition-colors flex items-center gap-2"><i class="gg-terminal"></i> Admin Panel</a></li>
                             <li><a href="{{ route('admin.manga.index') }}" class="hover:text-pip-green transition-colors flex items-center gap-2"><i class="gg-list"></i> Manage Manga</a></li>
+                            <li><a href="{{ route('admin.categories.index') }}" class="hover:text-pip-green transition-colors flex items-center gap-2"><i class="gg-folder"></i> Manage Categories</a></li>
+                            <li><a href="{{ route('admin.tags.index') }}" class="hover:text-pip-green transition-colors flex items-center gap-2"><i class="gg-tag"></i> Manage Tags</a></li>
+                            <li><a href="{{ route('admin.libraries.index') }}" class="hover:text-pip-green transition-colors flex items-center gap-2"><i class="gg-layout-grid"></i> Manage Libraries</a></li>
                         @endauth
                     </ul>
                 </div>

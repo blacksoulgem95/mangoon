@@ -8,6 +8,9 @@
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-future text-3xl font-semibold text-pip-green">Manga Details</h1>
         <div class="space-x-2">
+            <a href="{{ route('admin.manga.chapters.index', $manga) }}" class="btn btn-primary">
+                <span class="terminal-text">Manage Chapters</span>
+            </a>
             <a href="{{ route('admin.manga.edit', $manga) }}" class="btn btn-secondary">
                 <span class="terminal-text">Edit</span>
             </a>
@@ -137,11 +140,11 @@
                 <table class="w-full">
                     <thead>
                         <tr>
-                            <th class="p-3 text-future font-semibold">Cover</th>
-                            <th class="p-3 text-future font-semibold">Title</th>
-                            <th class="p-3 text-future font-semibold">Volume</th>
-                            <th class="p-3 text-future font-semibold">Sort Order</th>
-                            <th class="p-3 text-future font-semibold">Actions</th>
+                            <th class="p-3 text-future font-semibold text-pip-green">Cover</th>
+                            <th class="p-3 text-future font-semibold text-pip-green">Title</th>
+                            <th class="p-3 text-future font-semibold text-pip-green">Volume</th>
+                            <th class="p-3 text-future font-semibold text-pip-green">Sort Order</th>
+                            <th class="p-3 text-future font-semibold text-pip-green">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -155,7 +158,7 @@
                                     @endif
                                 </td>
                                 <td class="p-3">
-                                    <a href="{{ route('chapter.show', [$manga, $chapter]) }}" class="text-pip-green hover:underline">
+                                    <a href="{{ route('admin.manga.chapters.show', [$manga, $chapter]) }}" class="text-pip-green hover:underline">
                                         {{ $chapter->displayName() }}
                                     </a>
                                 </td>

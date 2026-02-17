@@ -82,7 +82,7 @@
                             <a href="{{ route('admin.chapters.show', $chapter) }}" class="btn btn-secondary btn-sm">
                                 <span class="terminal-text">View</span>
                             </a>
-                            <form action="{{ route('admin.chapters.toggle-active', $chapter) }}" method="POST" class="inline-block">
+                            <form action="{{ route('admin.manga.chapters.toggle-active', [$chapter->manga, $chapter]) }}" method="POST" class="inline-block">
                                 @csrf
                                 <button type="submit" class="btn btn-sm {{ $chapter->is_active ? 'btn-danger' : 'btn-primary' }}">
                                     <span class="terminal-text">{{ $chapter->is_active ? 'Deactivate' : 'Activate' }}</span>

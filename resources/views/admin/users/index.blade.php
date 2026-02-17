@@ -51,7 +51,9 @@
                             @endif
                         </td>
                         <td class="p-3">
-                            {{ $user->name }}
+                            <a href="{{ route('admin.users.show', $user) }}" class="text-pip-green hover:underline">
+                                {{ $user->name }}
+                            </a>
                         </td>
                         <td class="p-3">{{ $user->email }}</td>
                         <td class="p-3">
@@ -63,8 +65,9 @@
                         </td>
                         <td class="p-3">{{ $user->created_at->format('F j, Y') }}</td>
                         <td class="p-3 space-x-2">
-                            <!-- No view action for user -->
-                            {{-- Edit and Delete actions could be added here if routes exist --}}
+                            <a href="{{ route('admin.users.show', $user) }}" class="btn btn-secondary btn-sm">
+                                <span class="terminal-text">View</span>
+                            </a>
                         </td>
                     </tr>
                 @empty

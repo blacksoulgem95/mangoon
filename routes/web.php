@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\ChapterController as AdminChapterController;
 use App\Http\Controllers\Admin\MangaController as AdminMangaController;
 use App\Http\Controllers\ChapterController;
 use App\Http\Controllers\MangaController;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ChapterListController;
 use App\Http\Controllers\Admin\UserController;
@@ -23,6 +24,16 @@ use App\Http\Controllers\Admin\UserController;
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
+
+/*
+|--------------------------------------------------------------------------
+| Authentication Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/login', [AuthController::class, 'login'])->name('login')->middleware('guest');
+Route::post('/login', [AuthController::class, 'authenticate'])->name('authenticate')->middleware('guest');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
 /*
 |--------------------------------------------------------------------------
@@ -126,4 +137,36 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
             Route::delete('/{chapter}/force-delete', [AdminChapterController::class, 'forceDelete'])->name('force-delete');
         });
     });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Global Chapter Routes
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('chapters')->name('chapters.')->group(function () {
+        Route::get('/', [ChapterListController::class, 'index'])->name('index');
+        Route::get('/{chapter}', [ChapterListController::class, 'show'])->name('show');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Admin User Routes
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('index');
+        Route::get('/{user}', [UserController::class, 'show'])->name('show');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Settings Routes
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/settings', function () {
+        return view('admin.settings');
+    })->name('settings');
 });

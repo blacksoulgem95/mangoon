@@ -126,6 +126,9 @@
             <div id="translationContainer" class="space-y-4">
                 @php
                     $oldTranslations = old('translations', []);
+                    if (empty($oldTranslations)) {
+                        $oldTranslations[] = ['language_code' => '', 'title' => '', 'synopsis' => ''];
+                    }
                 @endphp
                 @foreach($oldTranslations as $index => $translation)
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-border pt-4">
@@ -188,7 +191,7 @@
 
 {{-- JavaScript for dynamic translations --}}
 <script>
-    let translationIndex = {{ count(old('translations', [])) }};
+    let translationIndex = {{ count($oldTranslations) }};
     const container = document.getElementById('translationContainer');
     const addBtn = document.getElementById('addTranslationBtn');
 

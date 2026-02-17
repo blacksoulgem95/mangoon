@@ -1,59 +1,91 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# MANGOON
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Manga + Goon.**
 
-## About Laravel
+Yes, that is the name. Stop giggling. Or don't. The interpretation of this linguistic masterpiece is entirely dependent on how terminally online you are.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+If you thought "hired thug who enjoys reading Naruto between shakedowns," congratulations, you are pure of heart. If you thought of *literally anything else*... well, that says more about you than it does about this software. This system does not judge you, even if society might.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+This is a **Manga Management System** built with a retro-futuristic aesthetic, because apparently, we all long for the days when green text on a black screen meant you were hacking the mainframe, not just organizing your collection of slice-of-life rom-coms.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+A fun side project by **Sofia Vicedomini**.
 
-## Learning Laravel
+## 🧐 The "Vision"
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Do we need another manga reader/manager? Probably not.
+Did I make one anyway? Obviously.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Mangoon is designed to host, manage, and read manga archives (CBZ format) with style. It features a robust permission system, because not everyone deserves to see your entire library.
 
-## Laravel Sponsors
+## 🚀 Features
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+-   **CBZ Domination**: We treat your `.cbz` files with the respect they deserve. Upload them, extract them, read them.
+-   **Retro-Futuristic UI**: High contrast, terminal vibes, glowing text. It looks like the interface of a spaceship in an 80s anime, but it runs on Laravel 12.
+-   **Role-Based Access Control (RBAC)**:
+    -   **Admin**: God mode. Do whatever you want.
+    -   **Editor**: The people who actually do the work.
+    -   **Moderator**: Internet janitors.
+    -   **Reader**: The consumer class.
+-   **Manga & Chapter Tracking**: Keep track of volumes, chapters, and metadata so you don't have to remember which chapter the protagonist finally held hands in.
 
-### Premium Partners
+## 🛠️ Installation
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+You know the drill. If you don't know the drill, maybe you shouldn't be running a self-hosted manga server called "Mangoon".
 
-## Contributing
+1.  **Clone the repo.**
+    ```bash
+    git clone https://github.com/sofia/mangoon.git
+    cd mangoon
+    ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+2.  **Install PHP dependencies.**
+    (Requires PHP 8.3+, because we aren't savages living in the past).
+    ```bash
+    composer install
+    ```
 
-## Code of Conduct
+3.  **Install Frontend dependencies.**
+    ```bash
+    npm install
+    npm run build
+    ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+4.  **Environment Setup.**
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
+    *Configure your database in `.env`. PostgreSQL is preferred, but SQLite works if you're lazy.*
 
-## Security Vulnerabilities
+5.  **Migrate and Seed.**
+    This is the important part. It creates the tables and the all-powerful Admin user.
+    ```bash
+    php artisan migrate --seed
+    ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 🔑 Accessing the System
 
-## License
+Once installed, navigate to `/login`.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**Default Admin Credentials:**
+-   **Email:** `admin@mangoon.test`
+-   **Password:** `changeme,1`
+
+*Note: Please change this password. Or don't. I'm a README file, not a cop.*
+
+## 🏗️ Tech Stack
+
+-   **Laravel 12**: Bleeding edge.
+-   **TailwindCSS**: Because writing actual CSS is for chumps.
+-   **Pest**: For testing (assuming we actually wrote tests).
+-   **PostgreSQL**: Where the data lives.
+
+## ⚠️ Disclaimer
+
+The creator takes no responsibility for:
+1.  The weird looks you get when you tell your friends you are "working on Mangoon".
+2.  The content you choose to host.
+3.  Any loss of productivity due to admiring the glowing green UI.
+
+---
+*Built with 💚 and slightly questionable naming conventions by Sofia Vicedomini.*

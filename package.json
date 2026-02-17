@@ -5,7 +5,8 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
-        "localdb": "docker compose -f dev.compose.yml up -d"
+        "localdb": "docker compose -f dev.compose.yml up",
+        "laravel": "php artisan serve"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",

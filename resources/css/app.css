@@ -5,15 +5,4 @@
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
-@import 'central/stylesheet.css';
-```
-
-That's it.```mangoon/resources/css/app.css
-@import "tailwindcss";
-
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
-
-@import 'central/stylesheet.css';
+@import "./central/stylesheet.css";

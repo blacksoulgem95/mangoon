@@ -18,21 +18,14 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+    protected $fillable = ["name", "email", "password"];
 
     /**
      * The attributes that should be hidden for serialization.
      *
      * @var list<string>
      */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = ["password", "remember_token"];
 
     /**
      * Get the attributes that should be cast.
@@ -42,8 +35,8 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            "email_verified_at" => "datetime",
+            "password" => "hashed",
         ];
     }
 
@@ -52,8 +45,8 @@ class User extends Authenticatable
      */
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class, 'role_user')
-            ->withPivot('library_id', 'expires_at', 'is_active', 'metadata')
+        return $this->belongsToMany(Role::class, "role_user")
+            ->withPivot("library_id", "expires_at", "is_active", "metadata")
             ->withTimestamps();
     }
 
@@ -62,21 +55,21 @@ class User extends Authenticatable
      */
     public function hasRole(int|string|Role $role, ?int $libraryId = null): bool
     {
-        $query = $this->roles()->wherePivot('is_active', true);
+        $query = $this->roles()->wherePivot("is_active", true);
 
         if ($libraryId !== null) {
-            $query->wherePivot('library_id', $libraryId);
+            $query->wherePivot("library_id", $libraryId);
         }
 
         if ($role instanceof Role) {
-            return $query->where('roles.id', $role->id)->exists();
+            return $query->where("roles.id", $role->id)->exists();
         }
 
         if (is_numeric($role)) {
-            return $query->where('roles.id', $role)->exists();
+            return $query->where("roles.id", $role)->exists();
         }
 
-        return $query->where('roles.slug', $role)->exists();
+        return $query->where("roles.slug", $role)->exists();
     }
 
     /**
@@ -99,7 +92,7 @@ class User extends Authenticatable
     public function hasAllRoles(array $roles, ?int $libraryId = null): bool
     {
         foreach ($roles as $role) {
-            if (! $this->hasRole($role, $libraryId)) {
+            if (!$this->hasRole($role, $libraryId)) {
                 return false;
             }
         }
@@ -110,12 +103,14 @@ class User extends Authenticatable
     /**
      * Check if user has a specific permission.
      */
-    public function hasPermission(int|string|Permission $permission, ?int $libraryId = null): bool
-    {
-        $roles = $this->roles()->wherePivot('is_active', true);
+    public function hasPermission(
+        int|string|Permission $permission,
+        ?int $libraryId = null,
+    ): bool {
+        $roles = $this->roles()->wherePivot("is_active", true);
 
         if ($libraryId !== null) {
-            $roles->wherePivot('library_id', $libraryId);
+            $roles->wherePivot("library_id", $libraryId);
         }
 
         $roles = $roles->get();
@@ -132,8 +127,10 @@ class User extends Authenticatable
     /**
      * Check if user has any of the given permissions.
      */
-    public function hasAnyPermission(array $permissions, ?int $libraryId = null): bool
-    {
+    public function hasAnyPermission(
+        array $permissions,
+        ?int $libraryId = null,
+    ): bool {
         foreach ($permissions as $permission) {
             if ($this->hasPermission($permission, $libraryId)) {
                 return true;
@@ -146,10 +143,12 @@ class User extends Authenticatable
     /**
      * Check if user has all of the given permissions.
      */
-    public function hasAllPermissions(array $permissions, ?int $libraryId = null): bool
-    {
+    public function hasAllPermissions(
+        array $permissions,
+        ?int $libraryId = null,
+    ): bool {
         foreach ($permissions as $permission) {
-            if (! $this->hasPermission($permission, $libraryId)) {
+            if (!$this->hasPermission($permission, $libraryId)) {
                 return false;
             }
         }
@@ -160,11 +159,14 @@ class User extends Authenticatable
     /**
      * Assign a role to the user.
      */
-    public function assignRole(int|string|Role $role, ?int $libraryId = null, array $attributes = []): bool
-    {
+    public function assignRole(
+        int|string|Role $role,
+        ?int $libraryId = null,
+        array $attributes = [],
+    ): bool {
         $roleModel = $this->resolveRole($role);
 
-        if (! $roleModel) {
+        if (!$roleModel) {
             return false;
         }
 
@@ -172,11 +174,17 @@ class User extends Authenticatable
             return true;
         }
 
-        $this->roles()->attach($roleModel->id, array_merge([
-            'library_id' => $libraryId,
-            'is_active' => true,
-            'expires_at' => null,
-        ], $attributes));
+        $this->roles()->attach(
+            $roleModel->id,
+            array_merge(
+                [
+                    "library_id" => $libraryId,
+                    "is_active" => true,
+                    "expires_at" => null,
+                ],
+                $attributes,
+            ),
+        );
 
         return true;
     }
@@ -189,7 +197,7 @@ class User extends Authenticatable
         $success = true;
 
         foreach ($roles as $role) {
-            if (! $this->assignRole($role, $libraryId)) {
+            if (!$this->assignRole($role, $libraryId)) {
                 $success = false;
             }
         }
@@ -200,18 +208,20 @@ class User extends Authenticatable
     /**
      * Remove a role from the user.
      */
-    public function removeRole(int|string|Role $role, ?int $libraryId = null): bool
-    {
+    public function removeRole(
+        int|string|Role $role,
+        ?int $libraryId = null,
+    ): bool {
         $roleModel = $this->resolveRole($role);
 
-        if (! $roleModel) {
+        if (!$roleModel) {
             return false;
         }
 
-        $query = $this->roles()->where('roles.id', $roleModel->id);
+        $query = $this->roles()->where("roles.id", $roleModel->id);
 
         if ($libraryId !== null) {
-            $query->wherePivot('library_id', $libraryId);
+            $query->wherePivot("library_id", $libraryId);
         }
 
         $query->detach();
@@ -227,7 +237,7 @@ class User extends Authenticatable
         $success = true;
 
         foreach ($roles as $role) {
-            if (! $this->removeRole($role, $libraryId)) {
+            if (!$this->removeRole($role, $libraryId)) {
                 $success = false;
             }
         }
@@ -244,7 +254,7 @@ class User extends Authenticatable
         $existingQuery = $this->roles();
 
         if ($libraryId !== null) {
-            $existingQuery->wherePivot('library_id', $libraryId);
+            $existingQuery->wherePivot("library_id", $libraryId);
         }
 
         $existingQuery->detach();
@@ -256,12 +266,13 @@ class User extends Authenticatable
     /**
      * Get all permissions for the user (through roles).
      */
-    public function getAllPermissions(?int $libraryId = null): \Illuminate\Database\Eloquent\Collection
-    {
-        $roles = $this->roles()->wherePivot('is_active', true);
+    public function getAllPermissions(
+        ?int $libraryId = null,
+    ): \Illuminate\Support\Collection {
+        $roles = $this->roles()->wherePivot("is_active", true);
 
         if ($libraryId !== null) {
-            $roles->wherePivot('library_id', $libraryId);
+            $roles->wherePivot("library_id", $libraryId);
         }
 
         $roles = $roles->get();
@@ -273,7 +284,7 @@ class User extends Authenticatable
             $permissions = $permissions->merge($rolePermissions);
         }
 
-        return $permissions->unique('id');
+        return $permissions->unique("id");
     }
 
     /**
@@ -281,7 +292,7 @@ class User extends Authenticatable
      */
     public function isAdmin(): bool
     {
-        return $this->hasRole('admin');
+        return $this->hasRole("admin");
     }
 
     /**
@@ -289,7 +300,7 @@ class User extends Authenticatable
      */
     public function isEditor(): bool
     {
-        return $this->hasRole('editor');
+        return $this->hasRole("editor");
     }
 
     /**
@@ -297,7 +308,7 @@ class User extends Authenticatable
      */
     public function isReader(): bool
     {
-        return $this->hasRole('reader');
+        return $this->hasRole("reader");
     }
 
     /**
@@ -305,10 +316,10 @@ class User extends Authenticatable
      */
     public function activeRoles(?int $libraryId = null): BelongsToMany
     {
-        $query = $this->roles()->wherePivot('is_active', true);
+        $query = $this->roles()->wherePivot("is_active", true);
 
         if ($libraryId !== null) {
-            $query->wherePivot('library_id', $libraryId);
+            $query->wherePivot("library_id", $libraryId);
         }
 
         return $query;
@@ -317,11 +328,17 @@ class User extends Authenticatable
     /**
      * Check if user can perform an action on a resource.
      */
-    public function can(string $action, string $resource, ?int $libraryId = null): bool
-    {
-        $permission = Permission::byResourceAndAction($resource, $action)->first();
+    public function canPerform(
+        string $action,
+        string $resource,
+        ?int $libraryId = null,
+    ): bool {
+        $permission = Permission::byResourceAndAction(
+            $resource,
+            $action,
+        )->first();
 
-        if (! $permission) {
+        if (!$permission) {
             return false;
         }
 
@@ -341,6 +358,6 @@ class User extends Authenticatable
             return Role::find($role);
         }
 
-        return Role::where('slug', $role)->first();
+        return Role::where("slug", $role)->first();
     }
 }

@@ -255,7 +255,7 @@ class Chapter extends Model
     /**
      * Get formatted chapter display name.
      */
-    public function getDisplayName(): string
+    public function displayName(): string
     {
         $name = "Chapter {$this->chapter_number}";
 

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mangoon-frontend
+  namespace: mangoon
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mangoon-frontend
+  template:
+    metadata:
+      labels:
+        app: mangoon-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: your-registry/mangoon-frontend:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mangoon-frontend-service
+  namespace: mangoon
+spec:
+  selector:
+    app: mangoon-frontend
+  ports:
+    - port: 80
+      targetPort: 80
+  type: ClusterIP

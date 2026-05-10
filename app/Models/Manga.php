@@ -82,20 +82,16 @@ class Manga extends Model
         return $this->hasMany(MangaTranslation::class);
     }
 
-    /**
-     * Get the version relationships for this manga.
-     */
-    public function versions(): HasMany
+    public function versions(): BelongsToMany
     {
-        return $this->hasMany(MangaVersion::class);
+        return $this->belongsToMany(Manga::class, 'manga_versions', 'manga_id', 'related_manga_id')
+            ->withPivot(['version_type', 'language', 'notes'])
+            ->withTimestamps();
     }
 
-    /**
-     * Get the related manga versions (as the related manga).
-     */
-    public function relatedVersions(): HasMany
+    public function externalSources(): HasMany
     {
-        return $this->hasMany(MangaVersion::class, "related_manga_id");
+        return $this->hasMany(ExternalSource::class);
     }
 
     /**

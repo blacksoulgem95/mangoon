@@ -1,95 +1,350 @@
-# MANGOON
+# Mangoon - Manga Management Platform
 
-**Manga + Goon.**
+A modern manga and comic management platform built with Laravel 12, React, TypeScript, and PostgreSQL. Supports CBZ format, external OAuth, multi-user with library-scoped permissions, and S3/MinIO storage.
 
-Yes, that is the name. Stop giggling. Or don't. The interpretation of this linguistic masterpiece is entirely dependent on how terminally online you are.
+## Features
 
-If you thought "hired thug who enjoys reading Naruto between shakedowns," congratulations, you are pure of heart. If you thought of *literally anything else*... well, that says more about you than it does about this software. This system does not judge you, even if society might.
+- **Manga Management**: Full CRUD for manga, chapters, and CBZ files
+- **CBZ Reader**: On-demand extraction and WebP conversion for optimal viewing
+- **Multi-User System**: Role-based access control with library-scoped permissions
+- **External OAuth**: Generic OAuth2 support (GitHub, Google, etc.)
+- **Storage**: S3/MinIO integration with pre-signed URLs
+- **External Sources**: Plugin system for nhentai, MangaDex with cookie management
+- **Version Merging**: Link manga translations and detect duplicates
+- **Multi-Language**: Support for manga in multiple languages
+- **Dockerized**: Full Docker Compose and Kubernetes deployment
+- **E2E Testing**: Comprehensive Playwright test suite
 
-This is a **Manga Management System** built with a retro-futuristic aesthetic, because apparently, we all long for the days when green text on a black screen meant you were hacking the mainframe, not just organizing your collection of slice-of-life rom-coms.
+## Tech Stack
 
-A fun side project by **Sofia Vicedomini**.
+- **Backend**: Laravel 12, PHP 8.4, PostgreSQL 15, Redis
+- **Frontend**: React 19, TypeScript, Vite, TailwindCSS 4, Zustand
+- **Storage**: MinIO (S3-compatible)
+- **Auth**: JWT + Laravel Socialite
+- **Queue**: Redis-based job processing
+- **Testing**: Playwright (E2E), Pest (Backend)
+- **Deployment**: Docker Compose, Kubernetes
 
-## 🧐 The "Vision"
+## Quick Start (Development)
 
-Do we need another manga reader/manager? Probably not.
-Did I make one anyway? Obviously.
+### Prerequisites
 
-Mangoon is designed to host, manage, and read manga archives (CBZ format) with style. It features a robust permission system, because not everyone deserves to see your entire library.
+- Docker and Docker Compose
+- Node.js 20+ (for frontend development)
+- PHP 8.4+ (for local development)
 
-## 🚀 Features
+### 1. Clone and Setup
 
--   **CBZ Domination**: We treat your `.cbz` files with the respect they deserve. Upload them, extract them, read them.
--   **Retro-Futuristic UI**: High contrast, terminal vibes, glowing text. It looks like the interface of a spaceship in an 80s anime, but it runs on Laravel 12.
--   **Role-Based Access Control (RBAC)**:
-    -   **Admin**: God mode. Do whatever you want.
-    -   **Editor**: The people who actually do the work.
-    -   **Moderator**: Internet janitors.
-    -   **Reader**: The consumer class.
--   **Manga & Chapter Tracking**: Keep track of volumes, chapters, and metadata so you don't have to remember which chapter the protagonist finally held hands in.
+```bash
+git clone <repository-url>
+cd mangoon
 
-## 🛠️ Installation
+# Backend setup
+cp .env.example .env
+php artisan key:generate
+php artisan jwt:secret
 
-You know the drill. If you don't know the drill, maybe you shouldn't be running a self-hosted manga server called "Mangoon".
+# Frontend setup
+cd frontend
+cp .env.example .env 2>/dev/null || true
+```
 
-1.  **Clone the repo.**
-    ```bash
-    git clone https://github.com/sofia/mangoon.git
-    cd mangoon
-    ```
+### 2. Start Services
 
-2.  **Install PHP dependencies.**
-    (Requires PHP 8.3+, because we aren't savages living in the past).
-    ```bash
-    composer install
-    ```
+```bash
+# Start all services (backend, frontend, postgres, redis, minio)
+docker-compose up -d
 
-3.  **Install Frontend dependencies.**
-    ```bash
-    npm install
-    npm run build
-    ```
+# Run migrations
+docker-compose exec app php artisan migrate
 
-4.  **Environment Setup.**
-    ```bash
-    cp .env.example .env
-    php artisan key:generate
-    ```
-    *Configure your database in `.env`. PostgreSQL is preferred, but SQLite works if you're lazy.*
+# Create MinIO bucket
+docker-compose exec minio mc mb --ignore-existing minio/mangoon
+```
 
-5.  **Migrate and Seed.**
-    This is the important part. It creates the tables and the all-powerful Admin user.
-    ```bash
-    php artisan migrate --seed
-    ```
+### 3. Access the Application
 
-## 🔑 Accessing the System
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:8000
+- **MinIO Console**: http://localhost:9001
+- **Admin Panel**: http://localhost:5173/admin
 
-Once installed, navigate to `/login`.
+## Configuration
 
-**Default Admin Credentials:**
--   **Email:** `admin@mangoon.test`
--   **Password:** `changeme,1`
+### OAuth Setup
 
-*Note: Please change this password. Or don't. I'm a README file, not a cop.*
+1. Create an OAuth app on your provider (e.g., GitHub)
+2. Set callback URL: `http://localhost:8000/api/v1/auth/oauth/{provider}/callback`
+3. Update `.env`:
 
-## 🏗️ Tech Stack
+```env
+SOCIALITE_PROVIDERS=github
+GITHUB_CLIENT_ID=your_client_id
+GITHUB_CLIENT_SECRET=your_client_secret
+```
 
--   **Laravel 12**: Bleeding edge.
--   **TailwindCSS**: Because writing actual CSS is for chumps.
--   **Pest**: For testing (assuming we actually wrote tests).
--   **PostgreSQL**: Where the data lives.
+### S3/MinIO Setup
 
-## ⚠️ Disclaimer
+```env
+MANGA_DISK=s3
+MANGA_AWS_ACCESS_KEY_ID=minioadmin
+MANGA_AWS_SECRET_ACCESS_KEY=minioadmin
+MANGA_AWS_DEFAULT_REGION=us-east-1
+MANGA_AWS_BUCKET=mangoon
+MANGA_AWS_ENDPOINT=http://localhost:9000
+MANGA_AWS_USE_PATH_STYLE_ENDPOINT=true
+```
 
-The creator takes no responsibility for:
-1.  The weird looks you get when you tell your friends you are "working on Mangoon".
-2.  The content you choose to host.
-3.  Any loss of productivity due to admiring the glowing green UI.
+### External Sources (nhentai)
 
----
-*Built with 💚 and slightly questionable naming conventions by Sofia Vicedomini.*
+1. Extract cookies from your browser while logged into nhentai
+2. Export as JSON (using a browser extension)
+3. Import via Admin Panel → Cookie Management
+4. Cookies expire after 30 days by default
 
-Still reading chum, ay? why don't you toss a coin to your developer?
+## Testing
 
-[![Buy Me a Focaccia](https://storage.ko-fi.com/cdn/kofi5.png?v=6)](https://ko-fi.com/Q5Q1AEQQK)
+### Backend Tests (Pest)
+
+```bash
+# Run all tests
+docker-compose exec app php artisan test
+
+# Run specific test file
+docker-compose exec app php artisan test tests/Feature/MangaTest.php
+
+# Run with coverage
+docker-compose exec app php artisan test --coverage
+```
+
+### Frontend E2E Tests (Playwright)
+
+```bash
+cd frontend
+
+# Install Playwright browsers (first time only)
+npx playwright install chromium
+
+# Run all tests
+npm run test
+
+# Run tests in UI mode
+npm run test:ui
+
+# Run tests with browser visible
+npm run test:headed
+
+# Run specific test file
+npm run test tests/e2e/auth.spec.ts
+
+# Generate and view test report
+npm run test
+npm run test:report
+```
+
+### Test Structure
+
+```
+frontend/tests/e2e/
+├── auth.spec.ts          # Authentication tests
+├── manga.spec.ts         # Manga catalog and reader tests
+└── admin.spec.ts         # Admin panel tests
+```
+
+## API Endpoints
+
+### Authentication
+
+- `POST /api/v1/auth/login` - Login with email/password
+- `POST /api/v1/auth/logout` - Logout
+- `POST /api/v1/auth/refresh` - Refresh JWT token
+- `GET /api/v1/auth/me` - Get current user
+- `GET /api/v1/auth/oauth/{provider}/redirect` - OAuth redirect
+- `GET /api/v1/auth/oauth/{provider}/callback` - OAuth callback
+
+### Manga
+
+- `GET /api/v1/manga` - List manga (supports pagination, filtering)
+- `GET /api/v1/manga/{id}` - Get manga details
+- `POST /api/v1/manga` - Create manga (admin)
+- `PUT /api/v1/manga/{id}` - Update manga (admin)
+- `DELETE /api/v1/manga/{id}` - Delete manga (admin)
+- `GET /api/v1/manga/{id}/versions` - List linked versions
+- `POST /api/v1/manga/{id}/versions` - Link version
+- `DELETE /api/v1/manga/{id}/versions/{versionId}` - Unlink version
+- `GET /api/v1/admin/merge/suggestions` - Get duplicate suggestions
+
+### Chapters
+
+- `GET /api/v1/chapters/{id}/pages` - Get chapter pages
+- `GET /api/v1/chapters/{id}/page/{page}` - Get page URL
+
+### External Sources
+
+- `GET /api/v1/sources/{source}/search?q=query` - Search external source
+- `GET /api/v1/sources/{source}/{sourceId}` - Get source details
+- `POST /api/v1/sources/{source}/{sourceId}/download` - Download from source
+
+### Cookie Management
+
+- `GET /api/v1/cookies` - List user cookies
+- `POST /api/v1/cookies` - Save new cookie
+- `PUT /api/v1/cookies/{id}` - Update cookie
+- `DELETE /api/v1/cookies/{id}` - Delete cookie
+- `POST /api/v1/cookies/import` - Import from browser JSON
+
+### Libraries
+
+- `GET /api/v1/libraries` - List libraries
+- `POST /api/v1/libraries` - Create library
+- `PUT /api/v1/libraries/{id}` - Update library
+- `DELETE /api/v1/libraries/{id}` - Delete library
+- `POST /api/v1/libraries/{id}/users/{user}/assign-role` - Assign role
+
+## Project Structure
+
+```
+mangoon/
+├── app/                    # Laravel backend
+│   ├── Http/Controllers/Api/V1/
+│   │   ├── AuthController.php
+│   │   ├── MangaController.php
+│   │   ├── ChapterController.php
+│   │   ├── LibraryController.php
+│   │   ├── ExternalSourceController.php
+│   │   └── Admin/
+│   │       └── CookieController.php
+│   ├── Models/
+│   │   ├── User.php
+│   │   ├── Manga.php
+│   │   ├── Chapter.php
+│   │   ├── Library.php
+│   │   ├── OauthAccount.php
+│   │   ├── UserCookie.php
+│   │   ├── ExternalSource.php
+│   │   └── MangaVersion.php
+│   ├── Services/
+│   │   ├── S3Service.php
+│   │   └── CbzProcessor.php
+│   ├── Jobs/
+│   │   └── DownloadChapters.php
+│   └── Plugins/
+├── frontend/               # React frontend
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── ui/        # shadcn/ui components
+│   │   │   └── Layout.tsx
+│   │   ├── pages/
+│   │   │   ├── Home.tsx
+│   │   │   ├── Login.tsx
+│   │   │   ├── MangaDetail.tsx
+│   │   │   ├── Reader.tsx
+│   │   │   └── admin/
+│   │   ├── stores/        # Zustand stores
+│   │   │   ├── authStore.ts
+│   │   │   └── mangaStore.ts
+│   │   └── lib/
+│   └── tests/e2e/         # Playwright tests
+├── k8s/                    # Kubernetes manifests
+├── docker-compose.yml
+├── Dockerfile
+└── README.md
+```
+
+## Kubernetes Deployment
+
+### 1. Update Secrets
+
+Edit `k8s/secret.yaml` with your actual values:
+- Database credentials
+- AWS/S3 credentials
+- OAuth credentials
+- JWT secret
+
+### 2. Build and Push Images
+
+```bash
+# Build backend image
+docker build -t your-registry/mangoon-app:latest .
+docker push your-registry/mangoon-app:latest
+
+# Build frontend image
+cd frontend
+docker build -t your-registry/mangoon-frontend:latest .
+docker push your-registry/mangoon-frontend:latest
+```
+
+### 3. Deploy
+
+```bash
+kubectl apply -f k8s/namespace.yaml
+kubectl apply -f k8s/configmap.yaml
+kubectl apply -f k8s/secret.yaml
+kubectl apply -f k8s/
+```
+
+### 4. External Dependencies
+
+You'll need to provision externally:
+- PostgreSQL database
+- Redis instance
+- S3-compatible storage (MinIO, AWS S3, DigitalOcean Spaces)
+
+## Development
+
+### Backend
+
+```bash
+# Run in development mode
+composer run dev
+
+# Run tests
+composer test
+
+# Generate API documentation
+php artisan swagger:generate
+```
+
+### Frontend
+
+```bash
+cd frontend
+
+# Install dependencies
+npm install
+
+# Development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Run E2E tests
+npm run test
+```
+
+## License
+
+MIT License
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Testing Requirements
+
+- All new features must include tests
+- Backend: Pest PHP tests in `tests/Feature/` and `tests/Unit/`
+- Frontend: Playwright E2E tests in `frontend/tests/e2e/`
+- All tests must pass before merging
+
+## Support
+
+For issues, questions, or contributions:
+- Open an issue on GitHub
+- Check existing documentation
+- Contact the maintainers

@@ -65,6 +65,11 @@ class Chapter extends Model
         return $this->belongsTo(Manga::class);
     }
 
+    public function externalSource(): BelongsTo
+    {
+        return $this->belongsTo(ExternalSource::class, 'external_source_id');
+    }
+
     /**
      * Get the storage disk instance.
      */

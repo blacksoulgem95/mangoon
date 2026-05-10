@@ -19,9 +19,9 @@ return new class extends Migration {
             $table
                 ->foreignId("parent_id")
                 ->nullable()
+                ->comment("Parent category for hierarchical structure")
                 ->constrained("categories")
-                ->nullOnDelete()
-                ->comment("Parent category for hierarchical structure");
+                ->nullOnDelete();
             $table
                 ->string("icon")
                 ->nullable()

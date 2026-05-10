@@ -2,23 +2,21 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Permission;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = ["name", "email", "password"];
+    protected $fillable = ["name", "email", "password", "is_root"];
+
+    protected $hidden = ["password", "remember_token"];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -27,16 +25,25 @@ class User extends Authenticatable
      */
     protected $hidden = ["password", "remember_token"];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             "email_verified_at" => "datetime",
             "password" => "hashed",
+            "is_root" => "boolean",
+        ];
+    }
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims(): array
+    {
+        return [
+            'is_root' => $this->is_root,
+            'email' => $this->email,
         ];
     }
 
@@ -50,15 +57,19 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
-    /**
-     * Get the library the user is associated with.
-     */
+    public function oauthAccounts(): BelongsToMany
+    {
+        return $this->belongsToMany(OauthAccount::class)->withPivot([
+            'token',
+            'refresh_token',
+            'expires_at',
+            'additional_data'
+        ]);
+    }
+
     public function library(): BelongsTo
     {
-        // This assumes a direct many-to-one or one-to-one relationship,
-        // or you might need to adjust based on how library association is truly managed.
-        // If it's through roles, the logic in hasRole/assignRole/removeRole is more critical.
-        return $this->belongsTo(Library::class, "library_id"); // Assuming a library_id foreign key on users table
+        return $this->belongsTo(Library::class, "library_id");
     }
 
     /**
@@ -85,6 +96,9 @@ class User extends Authenticatable
 
     /**
      * Check if user has any of the given roles.
+     *
+     * @param  array<int, \App\Models\Role|int|string>  $roles
+     * @param  int|null  $libraryId
      */
     public function hasAnyRole(array $roles, ?int $libraryId = null): bool
     {
@@ -99,6 +113,9 @@ class User extends Authenticatable
 
     /**
      * Check if user has all of the given roles.
+     *
+     * @param  array<int, \App\Models\Role|int|string>  $roles
+     * @param  int|null  $libraryId
      */
     public function hasAllRoles(array $roles, ?int $libraryId = null): bool
     {
@@ -118,25 +135,30 @@ class User extends Authenticatable
         int|string|Permission $permission,
         ?int $libraryId = null,
     ): bool {
-        $roles = $this->roles()->wherePivot("is_active", true);
+        $rolesQuery = $this->roles()->wherePivot("is_active", true);
 
         if ($libraryId !== null) {
-            $roles->wherePivot("library_id", $libraryId);
+            $rolesQuery->wherePivot("library_id", $libraryId);
         }
 
-        $roles = $roles->get();
-
-        foreach ($roles as $role) {
-            if ($role->hasPermission($permission)) {
-                return true;
-            }
-        }
-
-        return false;
+        return $rolesQuery
+            ->whereHas("permissions", function ($query) use ($permission) {
+                if ($permission instanceof Permission) {
+                    $query->where("permissions.id", $permission->id);
+                } elseif (is_int($permission)) {
+                    $query->where("permissions.id", $permission);
+                } else {
+                    $query->where("permissions.slug", $permission);
+                }
+            })
+            ->exists();
     }
 
     /**
      * Check if user has any of the given permissions.
+     *
+     * @param  array<int, \App\Models\Permission|int|string>  $permissions
+     * @param  int|null  $libraryId
      */
     public function hasAnyPermission(
         array $permissions,
@@ -153,6 +175,9 @@ class User extends Authenticatable
 
     /**
      * Check if user has all of the given permissions.
+     *
+     * @param  array<int, \App\Models\Permission|int|string>  $permissions
+     * @param  int|null  $libraryId
      */
     public function hasAllPermissions(
         array $permissions,
@@ -169,6 +194,10 @@ class User extends Authenticatable
 
     /**
      * Assign a role to the user.
+     *
+     * @param  \App\Models\Role|int|string  $role
+     * @param  int|null  $libraryId
+     * @param  array<string, mixed>  $attributes
      */
     public function assignRole(
         Role|int|string $role,
@@ -224,6 +253,9 @@ class User extends Authenticatable
 
     /**
      * Assign multiple roles to the user.
+     *
+     * @param  array<int, \App\Models\Role|int|string>  $roles
+     * @param  int|null  $libraryId
      */
     public function assignRoles(array $roles, ?int $libraryId = null): bool
     {
@@ -258,6 +290,9 @@ class User extends Authenticatable
 
     /**
      * Remove multiple roles from the user.
+     *
+     * @param  array<int, \App\Models\Role|int|string>  $roles
+     * @param  int|null  $libraryId
      */
     public function removeRoles(array $roles, ?int $libraryId = null): bool
     {
@@ -270,6 +305,9 @@ class User extends Authenticatable
 
     /**
      * Sync roles for the user.
+     *
+     * @param  array<int, \App\Models\Role|int|string>  $roles
+     * @param  int|null  $libraryId
      */
     public function syncRoles(array $roles, ?int $libraryId = null): void
     {
@@ -313,22 +351,14 @@ class User extends Authenticatable
     ): \Illuminate\Support\Collection {
         // Fetch roles associated with the user, filtered by library_id and is_active pivot attribute.
         $roles = $this->roles()
+            ->with("permissions")
             ->wherePivot("is_active", true)
             ->when($libraryId !== null, function ($query) use ($libraryId) {
                 $query->wherePivot("library_id", $libraryId);
             })
             ->get();
 
-        $permissions = collect();
-
-        foreach ($roles as $role) {
-            // Fetch active permissions for each role
-            $rolePermissions = $role->activePermissions()->get();
-            $permissions = $permissions->merge($rolePermissions);
-        }
-
-        // Return unique permissions based on their ID
-        return $permissions->unique("id");
+        return $roles->pluck("permissions")->flatten()->unique("id")->values();
     }
 
     /**
@@ -405,10 +435,10 @@ class User extends Authenticatable
 
         if (is_int($role) || ctype_digit($role)) {
             // If it's a numeric string or integer, try to find by ID
-            return Role::find($role);
+            return Role::query()->find($role);
         }
 
         // Otherwise, assume it's a slug and try to find by slug
-        return Role::where("slug", $role)->first();
+        return Role::query()->where("slug", $role)->first();
     }
 }

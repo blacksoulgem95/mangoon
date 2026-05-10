@@ -90,7 +90,7 @@ class CategoryController extends Controller
         if (!isset($validated["slug"])) {
             $originalSlug = $slug;
             $count = 1;
-            while (Category::where("slug", $slug)->exists()) {
+            while (Category::query()->where("slug", $slug)->exists()) {
                 $slug = $originalSlug . "-" . $count++;
             }
         }
@@ -99,7 +99,8 @@ class CategoryController extends Controller
         $parentId = $validated["parent_id"] ?? null;
         if (
             $parentId !== null &&
-            $parentId === (Category::where("slug", $slug)->first()->id ?? null)
+            $parentId ===
+                (Category::query()->where("slug", $slug)->first()->id ?? null)
         ) {
             // Check if parent_id conflicts with the category being created (if slug already exists somehow)
             return back()
@@ -109,7 +110,7 @@ class CategoryController extends Controller
                 ->withInput();
         }
 
-        $category = Category::create([
+        $category = Category::query()->create([
             "slug" => $slug,
             "parent_id" => $parentId,
             "color" => $validated["color"] ?? null,

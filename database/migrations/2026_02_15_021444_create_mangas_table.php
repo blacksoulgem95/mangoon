@@ -19,9 +19,9 @@ return new class extends Migration {
             $table
                 ->foreignId("source_id")
                 ->nullable()
+                ->comment("Primary source of the manga")
                 ->constrained()
-                ->nullOnDelete()
-                ->comment("Primary source of the manga");
+                ->nullOnDelete();
 
             // Metadata fields
             $table->string("author")->nullable()->comment("Manga author(s)");

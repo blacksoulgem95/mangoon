@@ -1,0 +1,108 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_URL=http://localhost:8000
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=mangoon
+      - DB_USERNAME=mangoon
+      - DB_PASSWORD=mangoon
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MANGA_AWS_ENDPOINT=http://minio:9000
+      - MANGA_AWS_USE_PATH_STYLE_ENDPOINT=true
+      - MANGA_AWS_BUCKET=mangoon
+      - CACHE_STORE=redis
+      - QUEUE_CONNECTION=redis
+    volumes:
+      - ./:/var/www/html
+      - ./frontend:/var/www/html/frontend
+    depends_on:
+      - postgres
+      - redis
+      - minio
+    working_dir: /var/www/html
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - APP_ENV=local
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=mangoon
+      - DB_USERNAME=mangoon
+      - DB_PASSWORD=mangoon
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MANGA_AWS_ENDPOINT=http://minio:9000
+      - MANGA_AWS_USE_PATH_STYLE_ENDPOINT=true
+      - MANGA_AWS_BUCKET=mangoon
+    volumes:
+      - ./:/var/www/html
+    command: php artisan queue:work --tries=3 --timeout=0
+    depends_on:
+      - postgres
+      - redis
+      - minio
+    working_dir: /var/www/html
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000/api
+    depends_on:
+      - app
+
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: mangoon
+      POSTGRES_PASSWORD: mangoon
+      POSTGRES_DB: mangoon
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address :9001
+
+volumes:
+  postgres_data:
+  minio_data:

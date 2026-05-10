@@ -18,12 +18,7 @@ class Tag extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        "slug",
-        "color",
-        "is_active",
-        "sort_order",
-    ];
+    protected $fillable = ["slug", "color", "is_active", "sort_order"];
 
     /**
      * Get the attributes that should be cast.
@@ -76,10 +71,15 @@ class Tag extends Model
     /**
      * Scope a query to search by translated name.
      */
-     */
-    public function scopeSearchByName($query, string $search, ?string $languageCode = null): void
-    {
-        $query->whereHas("translations", function ($q) use ($search, $languageCode) {
+    public function scopeSearchByName(
+        $query,
+        string $search,
+        ?string $languageCode = null,
+    ): void {
+        $query->whereHas("translations", function ($q) use (
+            $search,
+            $languageCode,
+        ) {
             $q->where("name", "like", "%{$search}%");
 
             if ($languageCode) {
@@ -91,9 +91,10 @@ class Tag extends Model
     /**
      * Scope a query to filter by language.
      */
-     */
-    public function scopeWithTranslation($query, ?string $languageCode = null): void
-    {
+    public function scopeWithTranslation(
+        $query,
+        ?string $languageCode = null,
+    ): void {
         if ($languageCode === null) {
             $languageCode = app()->getLocale();
         }
@@ -108,8 +109,9 @@ class Tag extends Model
     /**
      * Get translation for a specific language.
      */
-    public function getTranslation(?string $languageCode = null): ?TagTranslation
-    {
+    public function getTranslation(
+        ?string $languageCode = null,
+    ): ?TagTranslation {
         if ($languageCode === null) {
             $languageCode = app()->getLocale();
         }
@@ -164,8 +166,9 @@ class Tag extends Model
     /**
      * Get popular tags (by manga count).
      */
-    public static function popular(int $limit = 20): \Illuminate\Database\Eloquent\Collection
-    {
+    public static function popular(
+        int $limit = 20,
+    ): \Illuminate\Database\Eloquent\Collection {
         return static::active()
             ->withCount("mangas")
             ->orderByDesc("mangas_count")

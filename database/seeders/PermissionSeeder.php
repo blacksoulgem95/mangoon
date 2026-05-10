@@ -381,7 +381,7 @@ class PermissionSeeder extends Seeder
                 " " .
                 ucfirst($permData["resource"]);
 
-            $permission = Permission::firstOrCreate(
+            $permission = Permission::query()->firstOrCreate(
                 ["slug" => $slug],
                 [
                     "name" => $name,
@@ -407,12 +407,13 @@ class PermissionSeeder extends Seeder
     /**
      * Assign permissions to roles.
      */
-    protected function assignPermissionsToRoles(array $permissions): void
-    {
+    /**
+     * @param  array<string, \App\Models\Permission>  $permissions
+     */
     protected function assignPermissionsToRoles(array $permissions): void
     {
         // Admin - all permissions
-        $admin = Role::admin(); // Ensure admin role exists
+        $admin = Role::query()->where("slug", "admin")->first(); // Ensure admin role exists
         if ($admin) {
             $admin
                 ->permissions()
@@ -425,7 +426,7 @@ class PermissionSeeder extends Seeder
         }
 
         // Editor - content management permissions
-        $editor = Role::editor(); // Ensure editor role exists
+        $editor = Role::query()->where("slug", "editor")->first(); // Ensure editor role exists
         if ($editor) {
             $editorPermissions = [
                 "manga.view",
@@ -455,7 +456,7 @@ class PermissionSeeder extends Seeder
         }
 
         // Reader - viewing permissions only
-        $reader = Role::reader(); // Ensure reader role exists
+        $reader = Role::query()->where("slug", "reader")->first(); // Ensure reader role exists
         if ($reader) {
             $readerPermissions = [
                 "manga.view",
@@ -475,7 +476,7 @@ class PermissionSeeder extends Seeder
         }
 
         // Moderator - moderation permissions
-        $moderator = Role::firstOrCreate(
+        $moderator = Role::query()->firstOrCreate(
             // Use firstOrCreate for moderator
             ["slug" => "moderator"],
             [
@@ -517,7 +518,7 @@ class PermissionSeeder extends Seeder
         }
 
         // Contributor - limited content creation permissions
-        $contributor = Role::firstOrCreate(
+        $contributor = Role::query()->firstOrCreate(
             // Use firstOrCreate for contributor
             ["slug" => "contributor"],
             [

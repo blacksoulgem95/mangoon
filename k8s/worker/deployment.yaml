@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mangoon-worker
+  namespace: mangoon
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mangoon-worker
+  template:
+    metadata:
+      labels:
+        app: mangoon-worker
+    spec:
+      containers:
+        - name: worker
+          image: your-registry/mangoon-app:latest
+          command: ["php", "artisan", "queue:work"]
+          args: ["--tries=3", "--timeout=0"]
+          envFrom:
+            - configMapRef:
+                name: mangoon-config
+            - secretRef:
+                name: mangoon-secrets
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "200m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
